@@ -1,0 +1,4 @@
+/home/alarm/codebase_odroidv0.3/build/CMakeFiles/edit_cache.dir
+/home/alarm/codebase_odroidv0.3/build/CMakeFiles/rebuild_cache.dir
+/home/alarm/codebase_odroidv0.3/build/CMakeFiles/landingpad.dir
+/home/alarm/codebase_odroidv0.3/build/CMakeFiles/libr.dir

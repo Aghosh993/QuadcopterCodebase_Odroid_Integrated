@@ -1,0 +1,41 @@
+cmake_minimum_required(VERSION 2.8)
+
+project(landingpad)
+
+#set(RUNNING_ON_STM32 1)
+
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
+
+find_package(OpenCV REQUIRED)
+find_package(OpenMP REQUIRED)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+
+#file(GLOB libr *.cpp *.h*)
+set (libr Serial_USB.cpp detector.cpp gimbal_controller.cpp path_planner.cpp detector_planner_interface.cpp detector_planner_interface_adapter.cpp quadrotor_interface.cpp ground_vehicle_estimator.cpp ground_vehicle_estimator.h mat3.cpp mat3.h rotation.cpp rotation.h vec3.cpp vec3.h) 
+
+include_directories(${OpenCV_INCLUDE_DIRS})
+include_directories(${PROJECT_SOURCE_DIR})
+include_directories(${PROJECT_SOURCE_DIR}/serial_comm)
+include_directories(${PROJECT_SOURCE_DIR}/serial_comm/serial_comm)
+include_directories(${PROJECT_SOURCE_DIR}/serial_comm_platform_specific)
+link_directories(${PROJECT_SOURCE_DIR}/serial_comm/source)
+
+add_library(libr STATIC ${libr})
+set(SERIAL_COMM_SRCS serial_comm/source/quadrotor_comm.c serial_comm/source/quadrotor_messages.c serial_comm_platform_specific/quadrotor_message_handlers.c)
+
+if (DEFINED RUNNING_ON_STM32)
+  add_executable(landingpad main.cpp  ${SERIAL_COMM_SRCS})
+  add_definitions(-DENABLE_SERIAL_COMM)
+else(DEFINED RUNNING_ON_STM32)
+  add_executable(landingpad main.cpp)
+endif(DEFINED RUNNING_ON_STM32)
+
+target_link_libraries(landingpad ${OpenCV_LIBS} libr)
+if (DEFINED RUNNING_ON_STM32)
+  target_link_libraries(landingpad serial_comm_odroid)
+endif(DEFINED RUNNING_ON_STM32)
+
+
